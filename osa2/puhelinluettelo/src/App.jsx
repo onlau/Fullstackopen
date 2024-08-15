@@ -68,6 +68,11 @@ const App = () => {
       setCurrentMessage(`Added ${newPerson.name}.`)
       setTimeout(() => {setCurrentMessage(null)},5000)
     })
+    .catch(error => {
+      setClassName('error')
+      setCurrentMessage(JSON.stringify(error.response.data))
+      setTimeout(() => {setCurrentMessage(null)},5000)
+    })
   }
 
   const deletePerson = (id) => {
