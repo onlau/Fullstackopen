@@ -41,10 +41,8 @@ const App = () => {
       })
       .catch(error => {
         setClassName('error')
-        setCurrentMessage(`Failed to update number; ${newName} does not exist on server.`)
+        setCurrentMessage(JSON.stringify(error.response.data))
         setTimeout(() => {setCurrentMessage(null)},5000)
-        setPersons(persons.filter(person => person.id !== id))
-        setPersonsToShow(persons.filter(person => person.id !== id))
       })
     }
     else {
