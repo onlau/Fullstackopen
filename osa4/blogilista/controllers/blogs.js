@@ -19,9 +19,7 @@ blogsRouter.post('', async (request, response) => {
         error: "must log in to post blogs"
       })
     }
-    const decoded = jwt.verify(request.token, process.env.SECRET)
-    blog.user = decoded.id
-    const user = await User.findById(decoded.id)
+    const user = await User.findById(request.user)
     const b = await blog.save()
     user.blogs = user.blogs.concat(b._id)
     await user.save()
@@ -30,8 +28,7 @@ blogsRouter.post('', async (request, response) => {
 
 blogsRouter.delete('/:id', async (request,response) => {
     const userid = await Blog.findById(request.params.id)
-    decodedid = jwt.verify(request.token, process.env.SECRET).id
-    if (userid.user.toString() != decodedid.toString()){
+    if (request.user.toString() != userid.user.toString()){
       return response.status(401).json({
         error: "deletion unauthorized"
       })
