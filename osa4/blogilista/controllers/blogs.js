@@ -2,6 +2,7 @@ const blogsRouter = require('express').Router()
 const jwt = require('jsonwebtoken')
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const blog = require('../models/blog')
 
 blogsRouter.get('', async (request, response) => {
   const blogs = await Blog
@@ -28,8 +29,15 @@ blogsRouter.post('', async (request, response) => {
   })
 
 blogsRouter.delete('/:id', async (request,response) => {
-    const r = await Blog.findByIdAndDelete(request.params.id)
-    await r.status(204).send()
+    const userid = await Blog.findById(request.params.id)
+    decodedid = jwt.verify(request.token, process.env.SECRET).id
+    if (userid.user.toString() != decodedid.toString()){
+      return response.status(401).json({
+        error: "deletion unauthorized"
+      })
+    }
+    await Blog.findByIdAndDelete(request.params.id)
+    await response.status(204).send()
   })
 
 blogsRouter.put('/:id', async (request, response) => {
