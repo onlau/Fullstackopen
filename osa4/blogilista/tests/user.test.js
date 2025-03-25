@@ -8,8 +8,9 @@ const api = supertest(app)
 const user = require("../models/user")
 
 beforeEach (async() => {
+    const iu = await initialUsers()
     await user.deleteMany({})
-    await user.insertMany(initialUsers)
+    await user.insertMany(iu)
 })
 
 test("faulty users not created", async () => {
