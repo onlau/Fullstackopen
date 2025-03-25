@@ -1,6 +1,6 @@
 const Blog = require("../models/blog")
 
-const initialBlogs = [
+let initialBlogs = [
     {
         title: "abc",
         author: "def",

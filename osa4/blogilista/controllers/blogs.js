@@ -1,18 +1,28 @@
 const blogsRouter = require('express').Router()
 const jwt = require('jsonwebtoken')
+const middleware = require('../utils/middleware')
 const Blog = require('../models/blog')
 const User = require('../models/user')
-const blog = require('../models/blog')
 
-blogsRouter.get('', async (request, response) => {
+blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog
     .find({}).populate("user")
 
   response.json(blogs)
 })
   
-blogsRouter.post('', async (request, response) => {
+blogsRouter.post('', middleware.userExtractor, async (request, response) => {
     const blog = new Blog(request.body)
+    if (!blog.url){
+      response.status(400).json({
+        error: "no url"
+      })
+    }
+    if (!blog.title){
+      response.status(400).json({
+        error: "no title"
+      })
+    }
     const users = await User.find({})
     if (!request.token){
       return response.status(401).json({
@@ -23,10 +33,11 @@ blogsRouter.post('', async (request, response) => {
     const b = await blog.save()
     user.blogs = user.blogs.concat(b._id)
     await user.save()
+    response.set("Content-Type", "application/json")
     response.status(201).send()
   })
 
-blogsRouter.delete('/:id', async (request,response) => {
+blogsRouter.delete('/:id', middleware.userExtractor, async (request,response) => {
     const userid = await Blog.findById(request.params.id)
     if (request.user.toString() != userid.user.toString()){
       return response.status(401).json({

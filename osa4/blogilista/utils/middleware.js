@@ -12,9 +12,10 @@ const tokenExtractor = (request, response, next) => {
 }
 
 const userExtractor = (request, response, next) => {
-    console.log(request.token)
-    const user = jwt.verify(request.token, process.env.SECRET)
-    request.user = user.id.toString()
+    if (request.token) {
+        const user = jwt.verify(request.token, process.env.SECRET)
+        request.user = user.id.toString()
+    }
     next()
 }
 
